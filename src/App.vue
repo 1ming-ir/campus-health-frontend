@@ -1,0 +1,1 @@
+<template><div class="app"><aside v-if="$route.path!=='/'"><h2>校医问诊</h2><RouterLink to="/student">学生首页</RouterLink><RouterLink to="/consult">AI问诊</RouterLink><RouterLink to="/appointment">预约</RouterLink><RouterLink to="/articles">科普</RouterLink><RouterLink to="/doctor">医生端</RouterLink><RouterLink to="/admin">管理端</RouterLink></aside><main><RouterView /></main></div></template>
