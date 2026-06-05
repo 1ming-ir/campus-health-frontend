@@ -4,6 +4,14 @@ export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 });
 
+api.interceptors.request.use((config) => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user.token) {
+    config.headers.Authorization = `Bearer ${user.token}`;
+  }
+  return config;
+});
+
 export async function login(payload) {
   return (await api.post('/api/auth/login', payload)).data;
 }
@@ -54,4 +62,12 @@ export async function listAdminDoctors() {
 
 export async function listAdminArticles() {
   return (await api.get('/api/admin/articles')).data;
+}
+
+export async function updateAdminUserStatus(id, status) {
+  return (await api.put(`/api/admin/users/${id}/status`, { status })).data;
+}
+
+export async function updateAdminArticleStatus(id, status) {
+  return (await api.put(`/api/admin/articles/${id}/status`, { status })).data;
 }

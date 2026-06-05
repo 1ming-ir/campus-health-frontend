@@ -25,7 +25,7 @@ npm run dev
 如果后端不是 `http://localhost:8080`，请配置 `.env`：
 
 ```env
-VITE_API_BASE_URL=http://localhost:8080
+VITE_API_BASE_URL=https://campus-health-backend-production.up.railway.app
 ```
 
 ## 构建
@@ -41,3 +41,8 @@ npm run build
 - 学生：student / 123456
 - 医生：doctor / 123456
 - 管理员：admin / 123456
+
+
+## Vercel 路由配置
+
+项目包含 `vercel.json`，会将所有前端子路由重写到 `index.html`，避免直接刷新 `/student`、`/doctor`、`/admin` 时出现 404。
