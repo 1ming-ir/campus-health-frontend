@@ -1,7 +1,7 @@
 ﻿import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://campus-health-backend-production.up.railway.app'
 });
 
 api.interceptors.request.use((config) => {
@@ -71,3 +71,4 @@ export async function updateAdminUserStatus(id, status) {
 export async function updateAdminArticleStatus(id, status) {
   return (await api.put(`/api/admin/articles/${id}/status`, { status })).data;
 }
+
