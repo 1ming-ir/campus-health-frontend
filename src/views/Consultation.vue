@@ -1,138 +1,79 @@
-﻿<template>
+<template>
   <div class="page-head page-head-row">
-    <div>
-      <h1>AI 健康问诊</h1>
-      <p>填写症状信息后生成初步健康建议；系统会保留记录，便于后续预约和医生补充意见。</p>
-    </div>
-    <RouterLink class="btn ghost" to="/appointment">去预约</RouterLink>
+    <div><h1>AI 鍋ュ悍闂瘖</h1><p>濉啓瀹屾暣鐥囩姸淇℃伅鍚庣敓鎴愬垵姝ュ仴搴峰缓璁紝缁撴灉浼氫繚鐣欎负闂瘖璁板綍銆?/p></div>
+    <RouterLink class="btn ghost" to="/appointment">鍘婚绾?/RouterLink>
   </div>
-
-  <div class="consult-layout">
-    <div class="card consult-form-card">
-      <h3>症状信息</h3>
-      <label>症状描述 <span class="required">*</span></label>
-      <textarea v-model="form.symptom" rows="6" placeholder="例如：咽痛、咳嗽两天，体温 37.8℃，无明显胸闷"></textarea>
+  <div class="grid two">
+    <div class="card">
+      <h3>鐥囩姸淇℃伅</h3>
+      <label>鐥囩姸鎻忚堪 <span class="required">*</span></label>
+      <textarea v-model="form.symptom" rows="6" placeholder="渚嬪锛氬捊鐥涖€佸挸鍡戒袱澶╋紝浣撴俯 37.8鈩冿紝鏃犳槑鏄捐兏闂?></textarea>
       <div class="form-grid">
-        <div>
-          <label>持续时间</label>
-          <input v-model="form.duration" placeholder="例如：2天">
-        </div>
-        <div>
-          <label>严重程度</label>
-          <select v-model="form.severity">
-            <option>轻度</option>
-            <option>中度</option>
-            <option>重度</option>
-          </select>
-        </div>
+        <div><label>鎸佺画鏃堕棿 <span class="required">*</span></label><input v-model.trim="form.duration" placeholder="渚嬪锛?澶?></div>
+        <div><label>涓ラ噸绋嬪害 <span class="required">*</span></label><select v-model="form.severity"><option value="">璇烽€夋嫨</option><option>杞诲害</option><option>涓害</option><option>閲嶅害</option></select></div>
       </div>
-      <label>是否用药</label>
-      <input v-model="form.medicineUsed" placeholder="例如：未用药，或已服用退烧药">
-      <button class="btn block" :disabled="loading" @click="submit">{{ loading ? '生成中...' : '生成建议并保存记录' }}</button>
+      <label>鏄惁鐢ㄨ嵂 <span class="required">*</span></label>
+      <select v-model="form.medicineUsed"><option value="">璇烽€夋嫨</option><option>鏈敤鑽?/option><option>宸茬敤鑽?/option><option>涓嶇‘瀹?/option></select>
+      <template v-if="form.medicineUsed === '宸茬敤鑽?">
+        <label>鑽搧鍚嶇О <span class="required">*</span></label>
+        <input v-model.trim="form.medicineName" placeholder="璇峰～鍐欏凡浣跨敤鑽搧鍚嶇О">
+      </template>
+      <p class="muted">AI 寤鸿浠呬緵鍋ュ悍鍜ㄨ鍙傝€冿紝涓嶈兘鏇夸唬鍖荤敓璇婃柇銆?/p>
+      <button class="btn block" :disabled="loading" @click="submit">{{ loading ? '鐢熸垚涓?..' : '鐢熸垚寤鸿骞朵繚瀛樿褰? }}</button>
       <p class="error" v-if="error">{{ error }}</p>
     </div>
-
-    <aside class="side-panel">
-      <div class="card compact-card">
-        <h3>服务边界</h3>
-        <ul class="check-list">
-          <li>AI 建议只用于健康咨询，不替代医生诊断。</li>
-          <li>结果会进入记录，便于预约和医生接续处理。</li>
-          <li>出现呼吸困难、意识异常、剧烈疼痛等情况应立即线下就医。</li>
-        </ul>
-      </div>
-      <div class="card compact-card">
-        <h3>为什么不直接问通用 AI？</h3>
-        <p class="muted">通用 AI 只回答一次；本系统把症状、风险提示、预约、医生补充建议和科普内容串成校园健康服务流程。</p>
-      </div>
-    </aside>
+    <div class="card">
+      <h3>鏈嶅姟杈圭晫</h3>
+      <ul class="check-list">
+        <li>闂瘖缁撴灉浼氳繘鍏ヨ褰曪紝渚夸簬棰勭害鍜屽尰鐢熸帴缁鐞嗐€?/li>
+        <li>濡傚嚭鐜板懠鍚稿洶闅俱€佹剰璇嗗紓甯搞€佸墽鐑堢柤鐥涚瓑鎯呭喌锛屽簲绔嬪嵆绾夸笅灏卞尰銆?/li>
+        <li>鍖荤敓琛ュ厖寤鸿浼氬湪闂瘖璁板綍涓睍绀恒€?/li>
+      </ul>
+    </div>
   </div>
-
   <div class="card result-card" v-if="advice">
-    <div class="toolbar">
-      <h3>AI 初步建议</h3>
-      <span class="tag warn">仅供健康咨询参考</span>
-    </div>
-    <div class="advice-box structured">
-      <p v-for="(line, index) in adviceLines" :key="index">{{ line }}</p>
-    </div>
-    <div class="action-row">
-      <RouterLink class="btn" to="/appointment">需要医生进一步评估，去预约校医院</RouterLink>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="toolbar">
-      <h3>我的问诊记录</h3>
-      <span class="muted">{{ records.length }} 条</span>
-    </div>
-    <p class="empty" v-if="records.length === 0">暂无问诊记录。</p>
-    <div class="record-grid" v-else>
-      <article class="record-card" v-for="item in records" :key="item.id">
-        <div class="record-title">
-          <strong>{{ item.symptom || '未填写症状' }}</strong>
-          <span class="tag">{{ item.severity || '未分级' }}</span>
-        </div>
-        <p class="muted clamp">{{ item.aiAdvice || '暂无 AI 建议' }}</p>
-        <p class="doctor-reply" v-if="item.doctorReply"><strong>医生补充：</strong>{{ item.doctorReply }}</p>
-      </article>
-    </div>
+    <div class="toolbar"><h3>AI 鍒濇寤鸿</h3><span class="tag warn">浠呬緵鍋ュ悍鍜ㄨ鍙傝€?/span></div>
+    <div class="advice-box structured"><p v-for="(line, index) in lines" :key="index">{{ line }}</p></div>
+    <RouterLink class="btn" to="/appointment">闇€瑕佸尰鐢熻繘涓€姝ヨ瘎浼帮紝鍘婚绾︽牎鍖婚櫌</RouterLink>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue';
-import { createConsultation, listMyConsultations } from '../api';
+import { computed, reactive, ref } from 'vue';
+import { createConsultation } from '../api';
+import { adviceLines, currentUser } from '../utils';
 
-const user = JSON.parse(localStorage.getItem('user') || '{}');
-const form = reactive({ studentId: user.id || 1, symptom: '', duration: '', severity: '轻度', medicineUsed: '' });
+const user = currentUser();
+const form = reactive({ studentId: user.id || 1, symptom: '', duration: '', severity: '', medicineUsed: '', medicineName: '' });
 const advice = ref('');
-const records = ref([]);
 const loading = ref(false);
 const error = ref('');
-const adviceLines = computed(() => splitAdvice(advice.value));
+const lines = computed(() => adviceLines(advice.value));
 
-function splitAdvice(text) {
-  if (!text) return [];
-  const normalized = text.replace(/\r/g, '').split('\n').map((line) => line.trim()).filter(Boolean);
-  if (normalized.length > 1) return normalized;
-  return text
-    .replace(/([。！？；])/g, '$1\n')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
-}
-
-async function loadRecords() {
-  try {
-    const res = await listMyConsultations(user.id || 1);
-    records.value = res.data || [];
-  } catch (e) {
-    records.value = [];
-  }
+function validate() {
+  if (!form.symptom.trim() || form.symptom.trim().length < 5) return '鐥囩姸鎻忚堪涓嶈兘涓虹┖锛屼笖涓嶅皯浜?5 涓瓧銆?;
+  if (!form.duration.trim()) return '璇峰～鍐欐寔缁椂闂淬€?;
+  if (!form.severity) return '璇烽€夋嫨涓ラ噸绋嬪害銆?;
+  if (!form.medicineUsed) return '璇烽€夋嫨鏄惁鐢ㄨ嵂銆?;
+  if (form.medicineUsed === '宸茬敤鑽? && !form.medicineName.trim()) return '璇峰～鍐欒嵂鍝佸悕绉般€?;
+  return '';
 }
 
 async function submit() {
-  error.value = '';
-  if (!form.symptom.trim()) {
-    error.value = '请先填写症状描述，避免系统生成没有依据的建议。';
-    return;
-  }
+  error.value = validate();
+  if (error.value) return;
   loading.value = true;
   try {
     const res = await createConsultation(form);
     if (res.code !== 0) {
-      error.value = res.message || '问诊提交失败';
+      error.value = res.message || '闂瘖鎻愪氦澶辫触';
       return;
     }
     advice.value = res.data.aiAdvice || '';
-    await loadRecords();
-  } catch (e) {
-    error.value = '问诊服务暂时不可用，请联系管理员检查后端服务。';
+  } catch {
+    error.value = '闂瘖鏈嶅姟鏆傛椂涓嶅彲鐢紝璇疯仈绯荤鐞嗗憳妫€鏌ュ悗绔湇鍔°€?;
   } finally {
     loading.value = false;
   }
 }
-
-onMounted(loadRecords);
 </script>

@@ -1,4 +1,4 @@
-﻿# campus-health-frontend
+# campus-health-frontend
 
 校园健康问诊与咨询系统前端，采用 Vue 3 + Vite + Vue Router + Axios 实现学生、医生、管理员三类角色页面。
 

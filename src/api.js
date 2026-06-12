@@ -1,4 +1,4 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'https://campus-health-backend-production.up.railway.app'
@@ -12,63 +12,38 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export async function login(payload) {
-  return (await api.post('/api/auth/login', payload)).data;
-}
+const data = (promise) => promise.then((res) => res.data);
 
-export async function createConsultation(payload) {
-  return (await api.post('/api/consultations', payload)).data;
-}
+export const login = (payload) => data(api.post('/api/auth/login', payload));
+export const registerStudent = (payload) => data(api.post('/api/auth/register', payload));
+export const updateProfile = (payload) => data(api.put('/api/auth/profile', payload));
+export const getMe = (username) => data(api.get('/api/auth/me', { params: { username } }));
 
-export async function listMyConsultations(studentId = 1) {
-  return (await api.get('/api/consultations/my', { params: { studentId } })).data;
-}
+export const createConsultation = (payload) => data(api.post('/api/consultations', payload));
+export const listMyConsultations = (studentId = 1) => data(api.get('/api/consultations/my', { params: { studentId } }));
+export const listConsultations = () => data(api.get('/api/consultations'));
+export const replyConsultation = (id, doctorReply, doctorId = 1) => data(api.put(`/api/consultations/${id}/reply`, { doctorReply, doctorId }));
+export const deleteConsultation = (id, studentId = 1) => data(api.delete(`/api/consultations/${id}`, { params: { studentId } }));
+export const archiveConsultation = (id, studentId = 1) => data(api.put(`/api/consultations/${id}/archive`, { studentId }));
 
-export async function listConsultations() {
-  return (await api.get('/api/consultations')).data;
-}
+export const createAppointment = (payload) => data(api.post('/api/appointments', payload));
+export const listMyAppointments = (studentId = 1) => data(api.get('/api/appointments/my', { params: { studentId } }));
+export const listDoctorAppointments = (doctorId = 1) => data(api.get('/api/appointments/doctor', { params: { doctorId } }));
+export const listAllAppointments = () => data(api.get('/api/appointments'));
+export const updateAppointmentStatus = (id, status) => data(api.put(`/api/appointments/${id}/status`, { status }));
 
-export async function replyConsultation(id, doctorReply) {
-  return (await api.put(`/api/consultations/${id}/reply`, { doctorReply })).data;
-}
+export const listArticles = () => data(api.get('/api/articles'));
+export const listDoctors = () => data(api.get('/api/doctors'));
+export const listMedicines = () => data(api.get('/api/medicines'));
+export const listAnnouncements = () => data(api.get('/api/announcements'));
 
-export async function createAppointment(payload) {
-  return (await api.post('/api/appointments', payload)).data;
-}
-
-export async function listMyAppointments(studentId = 1) {
-  return (await api.get('/api/appointments/my', { params: { studentId } })).data;
-}
-
-export async function listDoctorAppointments(doctorId = 1) {
-  return (await api.get('/api/appointments/doctor', { params: { doctorId } })).data;
-}
-
-export async function updateAppointmentStatus(id, status) {
-  return (await api.put(`/api/appointments/${id}/status`, { status })).data;
-}
-
-export async function listArticles() {
-  return (await api.get('/api/articles')).data;
-}
-
-export async function listAdminUsers() {
-  return (await api.get('/api/admin/users')).data;
-}
-
-export async function listAdminDoctors() {
-  return (await api.get('/api/admin/doctors')).data;
-}
-
-export async function listAdminArticles() {
-  return (await api.get('/api/admin/articles')).data;
-}
-
-export async function updateAdminUserStatus(id, status) {
-  return (await api.put(`/api/admin/users/${id}/status`, { status })).data;
-}
-
-export async function updateAdminArticleStatus(id, status) {
-  return (await api.put(`/api/admin/articles/${id}/status`, { status })).data;
-}
-
+export const adminOverview = () => data(api.get('/api/admin/overview'));
+export const listAdminUsers = () => data(api.get('/api/admin/users'));
+export const listAdminDoctors = () => data(api.get('/api/admin/doctors'));
+export const listAdminArticles = () => data(api.get('/api/admin/articles'));
+export const listAdminAppointments = () => data(api.get('/api/admin/appointments'));
+export const listAdminConsultations = () => data(api.get('/api/admin/consultations'));
+export const listAdminMedicines = () => data(api.get('/api/admin/medicines'));
+export const listAdminAnnouncements = () => data(api.get('/api/admin/announcements'));
+export const updateAdminUserStatus = (id, status) => data(api.put(`/api/admin/users/${id}/status`, { status }));
+export const updateAdminArticleStatus = (id, status) => data(api.put(`/api/admin/articles/${id}/status`, { status }));
