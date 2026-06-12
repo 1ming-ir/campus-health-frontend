@@ -2,68 +2,171 @@
   <div class="app" :class="{ 'is-login': isPublic }">
     <aside v-if="!isPublic" class="sidebar">
       <div class="brand">
-        <div class="brand-mark">鏍?/div>
+        <div class="brand-mark">校</div>
+
         <div>
-          <h2>鏍″洯鍋ュ悍</h2>
-          <p>{{ roleName }}宸ヤ綔鍙?/p>
+          <h2>校园健康</h2>
+          <p>{{ roleName }}工作台</p>
         </div>
       </div>
+
       <nav>
-        <RouterLink v-for="link in navLinks" :key="link.path" :to="link.path">{{ link.label }}</RouterLink>
+        <RouterLink
+          v-for="link in navLinks"
+          :key="link.path"
+          :to="link.path"
+        >
+          {{ link.label }}
+        </RouterLink>
       </nav>
-      <button class="logout" @click="logout">閫€鍑虹櫥褰?/button>
+
+      <button class="logout" @click="logout">
+        退出登录
+      </button>
     </aside>
-    <main><RouterView /></main>
+
+    <main>
+      <RouterView />
+    </main>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const route = useRoute();
-const router = useRouter();
-const isPublic = computed(() => route.meta.public);
-const user = computed(() => JSON.parse(localStorage.getItem('user') || '{}'));
-const role = computed(() => user.value.role || localStorage.getItem('role') || 'STUDENT');
-const roleName = computed(() => ({ STUDENT: '瀛︾敓', DOCTOR: '鍖荤敓', ADMIN: '绠＄悊鍛? }[role.value] || '瀛︾敓'));
+const route = useRoute()
+const router = useRouter()
+
+const isPublic = computed(() => route.meta.public)
+
+const user = computed(() =>
+  JSON.parse(localStorage.getItem('user') || '{}')
+)
+
+const role = computed(() =>
+  user.value.role ||
+  localStorage.getItem('role') ||
+  'STUDENT'
+)
+
+const roleName = computed(() => ({
+  STUDENT: '学生',
+  DOCTOR: '医生',
+  ADMIN: '管理员'
+}[role.value] || '学生'))
+
 const menus = {
   STUDENT: [
-    { path: '/student', label: '瀛︾敓棣栭〉' },
-    { path: '/consult', label: 'AI 闂瘖' },
-    { path: '/consultations', label: '鎴戠殑闂瘖璁板綍' },
-    { path: '/doctors', label: '鏍″尰淇℃伅' },
-    { path: '/appointment', label: '鏍″尰闄㈤绾? },
-    { path: '/my-appointments', label: '鎴戠殑棰勭害' },
-    { path: '/articles', label: '鍋ュ悍绉戞櫘' },
-    { path: '/medicines', label: '鑽搧淇℃伅' },
-    { path: '/profile', label: '涓汉涓績' }
+    { path: '/student', label: '学生首页' },
+    { path: '/consult', label: 'AI问诊' },
+    { path: '/consultations', label: '我的问诊记录' },
+    { path: '/doctors', label: '校医信息' },
+    { path: '/appointment', label: '校医院预约' },
+    { path: '/my-appointments', label: '我的预约' },
+    { path: '/articles', label: '健康科普' },
+    { path: '/medicines', label: '药品信息' },
+    { path: '/profile', label: '个人中心' }
   ],
+
   DOCTOR: [
-    { path: '/doctor', label: '鍖荤敓棣栭〉' },
-    { path: '/doctor/appointments', label: '棰勭害澶勭悊' },
-    { path: '/doctor/consultations', label: '闂瘖澶嶆牳' },
-    { path: '/doctor/replies', label: '鍥炲璁板綍' },
-    { path: '/articles', label: '鍋ュ悍绉戞櫘' },
-    { path: '/profile', label: '涓汉涓績' }
+    { path: '/doctor', label: '医生首页' },
+    { path: '/doctor/appointments', label: '预约处理' },
+    { path: '/doctor/consultations', label: '问诊复核' },
+    { path: '/doctor/replies', label: '回复记录' },
+    { path: '/articles', label: '健康科普' },
+    { path: '/profile', label: '个人中心' }
   ],
+
   ADMIN: [
-    { path: '/admin', label: '绠＄悊棣栭〉' },
-    { path: '/admin/users', label: '鐢ㄦ埛绠＄悊' },
-    { path: '/admin/doctors', label: '鍖荤敓绠＄悊' },
-    { path: '/admin/consultations', label: '闂瘖绠＄悊' },
-    { path: '/admin/appointments', label: '棰勭害绠＄悊' },
-    { path: '/admin/articles', label: '绉戞櫘绠＄悊' },
-    { path: '/admin/medicines', label: '鑽搧绠＄悊' },
-    { path: '/admin/announcements', label: '鍏憡绠＄悊' },
-    { path: '/admin/stats', label: '鏁版嵁缁熻' }
+    { path: '/admin', label: '管理首页' },
+    { path: '/admin/users', label: '用户管理' },
+    { path: '/admin/doctors', label: '医生管理' },
+    { path: '/admin/consultations', label: '问诊管理' },
+    { path: '/admin/appointments', label: '预约管理' },
+    { path: '/admin/articles', label: '科普管理' },
+    { path: '/admin/medicines', label: '药品管理' },
+    { path: '/admin/announcements', label: '公告管理' },
+    { path: '/admin/stats', label: '数据统计' }
   ]
-};
-const navLinks = computed(() => menus[role.value] || menus.STUDENT);
+}
+
+const navLinks = computed(
+  () => menus[role.value] || menus.STUDENT
+)
 
 function logout() {
-  localStorage.removeItem('user');
-  localStorage.removeItem('role');
-  router.push('/');
+  localStorage.removeItem('user')
+  localStorage.removeItem('role')
+  router.push('/')
 }
 </script>
+
+<style scoped>
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: #1e293b;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+nav a.router-link-active {
+  background: #3b82f6;
+}
+
+.logout {
+  margin-top: auto;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+}
+
+.is-login {
+  display: block;
+}
+</style>
