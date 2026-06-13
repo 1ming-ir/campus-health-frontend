@@ -15,6 +15,7 @@ import Medicines from './views/Medicines.vue';
 import Profile from './views/Profile.vue';
 import DoctorDesk from './views/DoctorDesk.vue';
 import AdminDesk from './views/AdminDesk.vue';
+import { homePath } from './utils';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -29,7 +30,7 @@ const router = createRouter({
     { path: '/my-appointments', component: MyAppointments, meta: { roles: ['STUDENT'] } },
     { path: '/articles', component: Articles, meta: { roles: ['STUDENT', 'DOCTOR'] } },
     { path: '/medicines', component: Medicines, meta: { roles: ['STUDENT'] } },
-    { path: '/profile', component: Profile, meta: { roles: ['STUDENT', 'DOCTOR'] } },
+    { path: '/profile', component: Profile, meta: { roles: ['STUDENT', 'DOCTOR', 'ADMIN'] } },
     { path: '/doctor', component: DoctorDesk, meta: { roles: ['DOCTOR'], view: 'home' } },
     { path: '/doctor/appointments', component: DoctorDesk, meta: { roles: ['DOCTOR'], view: 'appointments' } },
     { path: '/doctor/consultations', component: DoctorDesk, meta: { roles: ['DOCTOR'], view: 'consultations' } },
@@ -42,7 +43,8 @@ const router = createRouter({
     { path: '/admin/articles', component: AdminDesk, meta: { roles: ['ADMIN'], view: 'articles' } },
     { path: '/admin/medicines', component: AdminDesk, meta: { roles: ['ADMIN'], view: 'medicines' } },
     { path: '/admin/announcements', component: AdminDesk, meta: { roles: ['ADMIN'], view: 'announcements' } },
-    { path: '/admin/stats', component: AdminDesk, meta: { roles: ['ADMIN'], view: 'stats' } }
+    { path: '/admin/stats', component: AdminDesk, meta: { roles: ['ADMIN'], view: 'stats' } },
+    { path: '/:pathMatch(.*)*', redirect: '/' }
   ]
 });
 
@@ -50,9 +52,7 @@ router.beforeEach((to) => {
   if (to.meta.public) return true;
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   if (!user.role) return '/';
-  if (to.meta.roles && !to.meta.roles.includes(user.role)) {
-    return user.role === 'DOCTOR' ? '/doctor' : user.role === 'ADMIN' ? '/admin' : '/student';
-  }
+  if (to.meta.roles && !to.meta.roles.includes(user.role)) return homePath(user.role);
   return true;
 });
 
